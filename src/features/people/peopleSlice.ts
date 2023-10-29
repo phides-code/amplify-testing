@@ -3,6 +3,7 @@ import {
     createSelector,
     createSlice,
 } from '@reduxjs/toolkit';
+import { RootState } from '../../app/store';
 
 const PEOPLE_URL = process.env.REACT_APP_PEOPLE_URL as string;
 
@@ -11,19 +12,25 @@ export interface Person {
     name: string;
 }
 
-interface FetchResponseType {
-    people?: Person[] | null;
-    message?: string | null;
+interface ErrorMessage {
+    message: string;
 }
 
-interface PeopleState extends FetchResponseType {
+interface FetchReturnType {
+    people?: Person[] | null;
+    errorMessage?: string | null;
+}
+
+type FetchResponseType = Person[] | ErrorMessage;
+
+interface PeopleState extends FetchReturnType {
     status: 'idle' | 'loading' | 'failed';
 }
 
 const initialState: PeopleState = {
     people: null,
     status: 'idle',
-    message: null,
+    errorMessage: null,
 };
 
 export const fetchPeople = createAsyncThunk('people/fetchPeople', async () => {
@@ -31,7 +38,14 @@ export const fetchPeople = createAsyncThunk('people/fetchPeople', async () => {
 
     const fetchResponse: FetchResponseType = await rawFetchResponse.json();
 
-    return fetchResponse;
+    if (Array.isArray(fetchResponse)) {
+        return { people: fetchResponse } as FetchReturnType; // Successful response with people array
+    } else {
+        const errorMessage: string =
+            fetchResponse.message || 'Failed to fetch people data';
+
+        return { errorMessage } as FetchReturnType; // Error response with an error message
+    }
 });
 
 export const peopleSlice = createSlice({
@@ -49,11 +63,14 @@ export const peopleSlice = createSlice({
             })
             .addCase(fetchPeople.rejected, (state, action) => {
                 state.status = 'failed';
-                state.message = action.error.message;
+                state.errorMessage = action.error.message;
             });
     },
 });
 
-// export const selectPeople = createSelector(
+export const selectPeople = createSelector(
+    (state: RootState) => state.people,
+    (people) => people
+);
 
-// )
+export default peopleSlice.reducer;
