@@ -34,7 +34,6 @@ const initialState: PeopleState = {
 };
 
 export const fetchPeople = createAsyncThunk('people/fetchPeople', async () => {
-    console.log('PEOPLE_URL: ' + PEOPLE_URL);
     const rawFetchResponse = await fetch(PEOPLE_URL);
 
     const fetchResponse: FetchResponseType = await rawFetchResponse.json();
