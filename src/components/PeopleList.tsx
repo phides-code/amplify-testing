@@ -21,17 +21,42 @@ const PeopleList = () => {
     if (errorState) return <Wrapper>Something went wrong.</Wrapper>;
 
     return (
-        <Wrapper>
+        <Table>
+            <TableHeader>ID</TableHeader>
+            <TableHeader>Name</TableHeader>
             {people &&
-                people?.map((person) => (
-                    <div key={person.id}>{person.name}</div>
+                people?.map((person, i) => (
+                    <TableRow key={person.id}>
+                        <TableCell>
+                            {
+                                person.id
+                                // .slice(0, 8)
+                            }
+                        </TableCell>
+                        <TableCell key={person.id}>{person.name}</TableCell>
+                    </TableRow>
                 ))}
-        </Wrapper>
+        </Table>
     );
 };
 
-const Wrapper = styled.div`
-    margin: 1rem;
+const Table = styled.table`
+    padding: 0.4rem 0 0.4rem 0.4rem;
+    margin: 0.4rem;
+    border: 1px solid;
+    border-radius: 8px;
 `;
+
+const TableHeader = styled.th`
+    text-align: left;
+`;
+
+const TableRow = styled.tr``;
+
+const TableCell = styled.td`
+    padding-right: 0.6rem;
+`;
+
+const Wrapper = styled.div``;
 
 export default PeopleList;
