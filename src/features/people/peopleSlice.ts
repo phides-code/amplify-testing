@@ -4,54 +4,37 @@ import {
     createSlice,
 } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
+import { Person } from '../../types';
 
 const PEOPLE_URL = process.env.REACT_APP_PEOPLE_URL as string;
 
-export interface Person {
-    id: string;
-    name: string;
+interface FetchResponseType {
+    data?: Person[];
+    errorMessage?: string;
 }
 
-interface ErrorMessage {
-    message: string;
-}
-
-interface FetchReturnType {
-    people?: Person[] | null;
-    errorMessage?: string | null;
-}
-
-type FetchResponseType = Person[] | ErrorMessage;
-
-// type PostError = string;
-
-interface PeopleState extends FetchReturnType {
+interface PeopleState {
+    people: Person[];
+    errorMessage: string;
     status: 'idle' | 'loading' | 'failed';
 }
 
 const initialState: PeopleState = {
-    people: null,
+    people: [],
     status: 'idle',
-    errorMessage: null,
+    errorMessage: '',
 };
-
-// export const postPerson = createAsyncThunk('people/postPerson', async () => [
-//     const rawPostResponse = await fetch(PEOPLE_URL)
-// ])
 
 export const fetchPeople = createAsyncThunk('people/fetchPeople', async () => {
     const rawFetchResponse = await fetch(PEOPLE_URL);
 
     const fetchResponse: FetchResponseType = await rawFetchResponse.json();
 
-    if (Array.isArray(fetchResponse)) {
-        return { people: fetchResponse } as FetchReturnType; // Successful response with people array
-    } else {
-        const errorMessage: string =
-            fetchResponse.message || 'Failed to fetch people data';
-
-        return { errorMessage } as FetchReturnType; // Error response with an error message
+    if (fetchResponse.errorMessage || !fetchResponse.data) {
+        throw new Error(fetchResponse.errorMessage);
     }
+
+    return fetchResponse;
 });
 
 export const peopleSlice = createSlice({
@@ -65,11 +48,11 @@ export const peopleSlice = createSlice({
             })
             .addCase(fetchPeople.fulfilled, (state, action) => {
                 state.status = 'idle';
-                state.people = action.payload.people;
+                state.people = action.payload.data as Person[];
             })
             .addCase(fetchPeople.rejected, (state, action) => {
                 state.status = 'failed';
-                state.errorMessage = action.error.message;
+                state.errorMessage = action.error.message as string;
             });
     },
 });

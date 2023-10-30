@@ -1,9 +1,11 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import peopleReducer from '../features/people/peopleSlice';
+import personReducer from '../features/person/personSlice';
 
 export const store = configureStore({
     reducer: {
         people: peopleReducer,
+        person: personReducer,
     },
 });
 
