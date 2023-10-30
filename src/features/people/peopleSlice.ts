@@ -23,6 +23,8 @@ interface FetchReturnType {
 
 type FetchResponseType = Person[] | ErrorMessage;
 
+// type PostError = string;
+
 interface PeopleState extends FetchReturnType {
     status: 'idle' | 'loading' | 'failed';
 }
@@ -32,6 +34,10 @@ const initialState: PeopleState = {
     status: 'idle',
     errorMessage: null,
 };
+
+// export const postPerson = createAsyncThunk('people/postPerson', async () => [
+//     const rawPostResponse = await fetch(PEOPLE_URL)
+// ])
 
 export const fetchPeople = createAsyncThunk('people/fetchPeople', async () => {
     const rawFetchResponse = await fetch(PEOPLE_URL);

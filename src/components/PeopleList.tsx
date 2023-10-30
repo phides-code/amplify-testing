@@ -22,20 +22,21 @@ const PeopleList = () => {
 
     return (
         <Table>
-            <TableHeader>ID</TableHeader>
-            <TableHeader>Name</TableHeader>
-            {people &&
-                people?.map((person, i) => (
-                    <TableRow key={person.id}>
-                        <TableCell>
-                            {
-                                person.id
-                                // .slice(0, 8)
-                            }
-                        </TableCell>
-                        <TableCell key={person.id}>{person.name}</TableCell>
-                    </TableRow>
-                ))}
+            <thead>
+                <TableRow>
+                    <TableHeader>ID</TableHeader>
+                    <TableHeader>Name</TableHeader>
+                </TableRow>
+            </thead>
+            <tbody>
+                {people &&
+                    people?.map((person, i) => (
+                        <TableRow key={person.id}>
+                            <TableCell>{person.id.slice(0, 8)}</TableCell>
+                            <TableCell key={person.id}>{person.name}</TableCell>
+                        </TableRow>
+                    ))}
+            </tbody>
         </Table>
     );
 };
