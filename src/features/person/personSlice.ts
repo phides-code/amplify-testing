@@ -31,12 +31,31 @@ export const createPerson = createAsyncThunk(
         const rawFetchResponse = await fetch(PEOPLE_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                newPerson,
-            }),
+            body: JSON.stringify(newPerson),
         });
 
         const fetchResponse: FetchResponseType = await rawFetchResponse.json();
+
+        if (fetchResponse.errorMessage || !fetchResponse.data) {
+            throw new Error(fetchResponse.errorMessage);
+        }
+
+        return fetchResponse;
+    }
+);
+
+export const deletePerson = createAsyncThunk(
+    'person/deletePerson',
+    async (personToDelete: Partial<Person>) => {
+        const rawfetchResponse = await fetch(
+            PEOPLE_URL + '/' + personToDelete.id,
+            {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+            }
+        );
+
+        const fetchResponse: FetchResponseType = await rawfetchResponse.json();
 
         if (fetchResponse.errorMessage || !fetchResponse.data) {
             throw new Error(fetchResponse.errorMessage);
@@ -62,11 +81,21 @@ const personSlice = createSlice({
             .addCase(createPerson.rejected, (state, action) => {
                 state.status = 'failed';
                 state.errorMessage = action.error.message as string;
+            })
+            .addCase(deletePerson.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(deletePerson.fulfilled, (state) => {
+                state.status = 'idle';
+            })
+            .addCase(deletePerson.rejected, (state, action) => {
+                state.status = 'failed';
+                state.errorMessage = action.error.message as string;
             });
     },
 });
 
-export const selectCreatePersonStatus = createSelector(
+export const selectPersonStatus = createSelector(
     (state: RootState) => state.person.status,
     (status) => status
 );

@@ -3,33 +3,31 @@ import styled from 'styled-components';
 import { useAppDispatch } from '../app/hooks';
 import {
     createPerson,
-    selectCreatePersonStatus,
+    selectPersonStatus,
 } from '../features/person/personSlice';
 import { useSelector } from 'react-redux';
+import { fetchPeople } from '../features/people/peopleSlice';
 
 const PersonAdder = () => {
     const dispatch = useAppDispatch();
     const [isSubmittimg, setIsSubmitting] = useState(false);
     const [nameInput, setNameInput] = useState('');
-    const createPersonStatus = useSelector(selectCreatePersonStatus);
+    const createPersonStatus = useSelector(selectPersonStatus);
 
     const isLoading = createPersonStatus === 'loading';
-    const errorState = createPersonStatus === 'failed';
-
-    console.log('createPersonStatus: ' + createPersonStatus);
-
     const disableButton = isSubmittimg || nameInput === '' || isLoading;
 
     const handleSubmit = async (ev: React.FormEvent<HTMLFormElement>) => {
         ev.preventDefault();
         setIsSubmitting(true);
-        console.log('nameInput:' + nameInput);
 
         await dispatch(
             createPerson({
                 name: nameInput,
             })
         );
+
+        await dispatch(fetchPeople());
 
         setNameInput('');
         setIsSubmitting(false);
@@ -48,14 +46,24 @@ const PersonAdder = () => {
                     onChange={(ev) => setNameInput(ev.target.value)}
                     autoComplete='name'
                 />
-                <button disabled={disableButton} type='submit'>
+                <StyledButton disabled={disableButton} type='submit'>
                     Submit
-                </button>
+                </StyledButton>
             </form>
-            {errorState && <div>Error adding person.</div>}
         </Wrapper>
     );
 };
+
+const StyledButton = styled.button`
+    border-radius: 8px;
+    background-color: darkgreen;
+    color: white;
+    &[disabled] {
+        border: 1px solid;
+        background-color: black;
+        color: darkgrey;
+    }
+`;
 
 const Wrapper = styled.div`
     width: max-content;

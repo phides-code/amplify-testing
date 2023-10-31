@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { selectPeople } from '../features/people/peopleSlice';
+import PersonRow from './PersonRow';
 
 const PeopleList = () => {
     const peopleState = useSelector(selectPeople);
@@ -17,10 +18,7 @@ const PeopleList = () => {
             <tbody>
                 {people &&
                     people?.map((person, i) => (
-                        <TableRow key={person.id}>
-                            <TableCell>{person.id.slice(0, 8)}</TableCell>
-                            <TableCell key={person.id}>{person.name}</TableCell>
-                        </TableRow>
+                        <PersonRow key={person.id} person={person} />
                     ))}
             </tbody>
         </Table>
@@ -31,6 +29,7 @@ const Table = styled.table`
     padding: 0.4rem 0 0.4rem 0.4rem;
     border: 1px solid;
     border-radius: 8px;
+    margin-bottom: 0.4rem;
 `;
 
 const TableHeader = styled.th`
@@ -38,9 +37,5 @@ const TableHeader = styled.th`
 `;
 
 const TableRow = styled.tr``;
-
-const TableCell = styled.td`
-    padding-right: 0.6rem;
-`;
 
 export default PeopleList;
