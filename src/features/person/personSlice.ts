@@ -51,7 +51,6 @@ export const deletePerson = createAsyncThunk(
             PEOPLE_URL + '/' + personToDelete.id,
             {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
             }
         );
 
